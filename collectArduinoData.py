@@ -1,10 +1,8 @@
 #!/usr/bin/python
 
 import serial
-import numpy as np
-import time
 
-testNum = 0
+testNum = 1
 
 ## Serial for Linux:
 arduino=serial.Serial('/dev/ttyACM0', 115200)
