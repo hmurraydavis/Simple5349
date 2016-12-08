@@ -128,63 +128,84 @@ if frequency_plots:
     plt.legend()
     plt.show()
     
-    
-xAvg = sum(y(1))/len(y(1))
-yAvg = sum(y(2))/len(y(2))
-zAvg = sum(y(3))/len(y(3))
+
+def computeRMS(start, stop, print = False):
+    xAvg = sum(y(1)[start:stop])/len(y(1)[start:stop])
+    yAvg = sum(y(2)[start:stop])/len(y(2)[start:stop])
+    zAvg = sum(y(3)[start:stop])/len(y(3)[start:stop])
 
 
-print 'Averages along axies: ' 
-print "\tX: ", xAvg
-print "\tY: ", yAvg
-print "\tZ: ", zAvg
-print 
+    print 'Averages along axies: ' 
+    print "\tX: ", xAvg
+    print "\tY: ", yAvg
+    print "\tZ: ", zAvg
+    print 
 
-rmsAvg = (xAvg**2 + yAvg**2 + zAvg**2)**.5
-print "RMS Value for X, Y, and Z: ", rmsAvg
-
-####freqWeightingFactor = float(raw_input("Frequency weighting factor (from table): "))
-
-####finalWeightedResult = freqWeightingFactor * rmsAvg
-
-####print 
-####print "Final weighted result is: ", finalWeightedResult
+    rmsAvg = (xAvg**2 + yAvg**2 + zAvg**2)**.5
+    if print: 
+        print "RMS Value for X, Y, and Z within in set range is: ", rmsAvg
+    return rmsAvg
 
 
+def saveSummaryFile(start, stop):
+    summaryFile = "summary_test"+str(testNum)+'.txt'
+    with open(summaryFile, 'a') as f:
+        f.write("SUMMARY RESULTS FOR VIBRATION TEST # "+str(testNum)+'\n\n')
+        
+        f.write('Start time index: '+str(start)+'\n')
+        f.write('End time index: '+str(stop)+'\n\n')
+        
+        f.write("Start time in ms: "+str(y(0)[start])+'\n')
+        f.write("End time in ms: "+str(y(0)[stop])+'\n\n')
+        
+        f.write("RMS within bounds is: "+str(computeRMS(start, stop))+'\n')
+        f.write("RMS for entirety of data: "+str(computeRMS(0, len(y(0))))+'\n\n')
+        
 
 
-#def makeOrthagonalAxisPlot(start, stop, save = False):
-#    f, axarr = plt.subplots(3, sharex=True)
+def makeOrthagonalAxisPlot(start, stop, save = False):
+    f, axarr = plt.subplots(3, sharex=True)
 
-#    t = [i for i in valuesList[0] ]
+    t = [i for i in valuesList[0] ]
 
-#    axarr[0].plot(t, y(1), 
-#        color = '#56033c', 
-#        alpha=.6, 
-#        linewidth=4, 
-#        label='X')
-#    axarr[1].plot(t, y(2), alpha=.6, 
-#        linewidth=4, 
-#        label='Y', 
-#        color = '#3c5603')
-#    axarr[2].plot(t, y(3), 
-#        alpha=.6, 
-#        linewidth=4, 
-#        label='Z',
-#        color = '#033c56')
+    axarr[0].plot(t[start:stop], y(1)[start:stop], 
+        color = '#56033c', 
+        alpha=.6, 
+        linewidth=4, 
+        label='X')
+    axarr[1].plot(t[start:stop], y(2)[start:stop], alpha=.6, 
+        linewidth=4, 
+        label='Y', 
+        color = '#3c5603')
+    axarr[2].plot(t[start:stop], y(3)[start:stop], 
+        alpha=.6, 
+        linewidth=4, 
+        label='Z',
+        color = '#033c56')
 
-#    for i, plot in enumerate(axarr):
-#        axarr[i].legend()
-#        #axarr[i].ylabel('Angular Position ( )', fontsize = 10)
-#    if save: 
-#        plt.savefig('plots/Test'+str(testNum)+'.png', bbox_inches='tight')
-#    else: 
-#        plt.show()
+    for i, plot in enumerate(axarr):
+        axarr[i].legend()
+        #axarr[i].ylabel('Angular Position ( )', fontsize = 10)
+    if save: 
+        plt.savefig('plots/Test'+str(testNum)+'.png', bbox_inches='tight')
+    else: 
+        plt.show()
 
-#userHappynessWithResult = False
-#userStart = 0 
-#userEnd = len(y(0))
-#while(userHappynessWithResult == False):
+userHappynessWithResult = False
+userStart = 0 
+userEnd = len(y(0))
+while(userHappynessWithResult == False):
+    makeOrthagonalAxisPlot(userStart, userEnd)
+    userHappynessResponse = raw_input("Are you satisfied with these start and stop points? y/n \n")
+    if(userHappynessResponse == 'y'):
+        userHappynessWithResult = True
+        computeRMS(userStart, userEnd)
+        saveSummaryFile(userStart, userEnd)
+        break
+        
+    userStart_ms = int(raw_input("Desired test start point, in ms:  "))
+    userEnd_ms = int(raw_input("Desired test end point, in ms   "))
 
-#print "magic: ", min(enumerate(y(0)), key=lambda x: abs(x[1]-53))
+    userStart = min(enumerate(y(0)), key=lambda x: abs(x[1]-userStart_ms))[0]
+    userEnd = min(enumerate(y(0)), key=lambda x: abs(x[1]-userEnd_ms))[0]
 
