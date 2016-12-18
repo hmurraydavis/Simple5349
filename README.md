@@ -18,18 +18,17 @@ Visualize the resulting data. Ensure that the initial and final data have minima
 To collect data, you should have first tested the setup to ensure proper functionality. The Ardunio must be connected via USB serial. If the software claims the COM port is not available, modify the name of the COM port to that of the Arduino. Windows users will need to toggel the Windows/Linux COM port naming lines. 
 
 To run the data collection script: 
-'''bash
+```bash
 $ python collectArduinoData.py <test number>
-'''
+```
 Where test number is an integer value used to denote which test we are running. This will be used in the data file name. Data will be saved in the current directory in a file named: "accelerometers<test number>.txt"
 
 Sometimes there is random noise or data from previous data collection on the serial buffer. If this is read into your data file, simply remove the offending lines in your text editor of choice and save the file. This should only be seen at the very beginning of a data file. Anywhere else is grounds to debug. 
 
 ##Data Analysis and Visualization
 Data can be visualized by running: 
-
-'''bash
+```bash
 $ python vibrationAnalysis.py <test number>
-'''
+```
 
 This will lead you through a series of instructions and will output a data summary file, denoted by the provided test number. To get the period, an operator should zoom the plot to a fixed time window and count the upward peaks. This can be used to determine the vibration frequency. This is used to determine the frequency weighting factor. 
