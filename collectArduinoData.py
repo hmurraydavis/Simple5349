@@ -1,8 +1,12 @@
 #!/usr/bin/python
 
 import serial
+import sys
 
-testNum = 1
+if len(sys.argv) <= 1:
+    testNum = 37
+else:
+    testNum = sys.argv[1]
 
 ## Serial for Linux:
 arduino=serial.Serial('/dev/ttyACM0', 115200)

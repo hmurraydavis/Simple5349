@@ -13,7 +13,7 @@ else:
 
 ## Decide what plots you want the script to produce. If you're not sure, set 
 ## them all to 1. 
-orthagonalAccelPlot = 1 ## Plot raw x, y, z accelerometer data
+orthagonalAccelPlot = 0 ## Plot raw x, y, z accelerometer data
 frequency_plots = 0 ## Plot the FFT distrabution. 
 
 ## Define the file you want it to read in from: 
@@ -67,6 +67,9 @@ structure, given the index.
 '''
 def y(n):
     return [i for i in valuesList[n] ]
+
+
+
 
 
 ## If the user wants us to, generate and show a plot of the raw sensor data  
@@ -127,23 +130,34 @@ if frequency_plots:
     plt.ylabel("Mysterious FFT Units", fontsize=18)
     plt.legend()
     plt.show()
+
+
+
+'''
+Returns the value, converted from ADC to G (m/s^2)
+'''
+def g(n):
+    return [((i*6/676)-2.95)*9.8 for i in valuesList[n] ]
+
     
 
-def computeRMS(start, stop, print = False):
-    xAvg = sum(y(1)[start:stop])/len(y(1)[start:stop])
-    yAvg = sum(y(2)[start:stop])/len(y(2)[start:stop])
-    zAvg = sum(y(3)[start:stop])/len(y(3)[start:stop])
-
-
-    print 'Averages along axies: ' 
-    print "\tX: ", xAvg
-    print "\tY: ", yAvg
-    print "\tZ: ", zAvg
-    print 
-
+def computeRMS(start, stop, printDes=False):
+    xAvg = sum(g(1)[start:stop])/len(y(1)[start:stop])
+    yAvg = sum(g(2)[start:stop])/len(y(2)[start:stop])
+    zAvg = sum(g(3)[start:stop])/len(y(3)[start:stop])
+    
     rmsAvg = (xAvg**2 + yAvg**2 + zAvg**2)**.5
-    if print: 
+
+    if printDes:
+        print 'Averages along axies: ' 
+        print "\tX: ", xAvg
+        print "\tY: ", yAvg
+        print "\tZ: ", zAvg
+        print 
+
         print "RMS Value for X, Y, and Z within in set range is: ", rmsAvg
+        
+        
     return rmsAvg
 
 
@@ -168,20 +182,21 @@ def makeOrthagonalAxisPlot(start, stop, save = False):
 
     t = [i for i in valuesList[0] ]
 
-    axarr[0].plot(t[start:stop], y(1)[start:stop], 
-        color = '#56033c', 
-        alpha=.6, 
+    axarr[0].plot(t[start:stop], g(1)[start:stop], 
+        color = '#18549A', 
+        alpha=.8, 
         linewidth=4, 
         label='X')
-    axarr[1].plot(t[start:stop], y(2)[start:stop], alpha=.6, 
+    axarr[1].plot(t[start:stop], g(2)[start:stop], 
+        alpha=.8, 
         linewidth=4, 
         label='Y', 
-        color = '#3c5603')
-    axarr[2].plot(t[start:stop], y(3)[start:stop], 
-        alpha=.6, 
+        color = '#494528')
+    axarr[2].plot(t[start:stop], g(3)[start:stop], 
+        alpha=.8, 
         linewidth=4, 
         label='Z',
-        color = '#033c56')
+        color = '#FF0101')
 
     for i, plot in enumerate(axarr):
         axarr[i].legend()
@@ -208,4 +223,3 @@ while(userHappynessWithResult == False):
 
     userStart = min(enumerate(y(0)), key=lambda x: abs(x[1]-userStart_ms))[0]
     userEnd = min(enumerate(y(0)), key=lambda x: abs(x[1]-userEnd_ms))[0]
-
